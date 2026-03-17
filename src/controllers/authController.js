@@ -12,19 +12,26 @@ exports.register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role
+      role,
     });
 
-    res.json(user);
+    res.status(201).json({
+      message: "User registered successfully",
+      data: user
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message
+    });
   }
 };
-
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    console.log(req.body);
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
@@ -42,16 +49,18 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
+
     const token = jwt.sign(
       {
         id: user._id,
-        role: user.role
+        role: user.role,
       },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1d" },
     );
 
-    res.json({ token });
+    // res.json({ token });
+    res.status(200).json({ message: "login successfull" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
